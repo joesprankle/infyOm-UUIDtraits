@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Flash;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Response;
+use  Spatie\Tags\Tag;
 
 class OrganizationController extends AppBaseController
 {
@@ -59,6 +60,12 @@ class OrganizationController extends AppBaseController
 
         $organization = $this->organizationRepository->create($input);
 
+        $organization->syncTagsWithType([$request->orgType], 'orgType');
+        $organization->syncTagsWithType([$request->color1],'orgColor1');
+        $organization->syncTagsWithType([$request->color2],'orgColor2');
+        $organization->syncTagsWithType([$request->color3],'orgColor3');
+        $organization->syncTagsWithType([$request->orgSubType], 'orgSubType');
+
         Flash::success('Organization saved successfully.');
 
         return redirect(route('organizations.index'));
@@ -94,6 +101,11 @@ class OrganizationController extends AppBaseController
     public function edit($id)
     {
         $organization = $this->organizationRepository->findWithoutFail($id);
+        $type = $organization->tagsWithType('orgType')->first();
+        $subType = $organization->tagsWithType('orgSubType')->first();
+        $color1 = $organization->tagsWithType('orgColor1')->first();
+        $color2 = $organization->tagsWithType('orgColor2')->first();
+        $color3 = $organization->tagsWithType('orgColor3')->first();
 
         if (empty($organization)) {
             Flash::error('Organization not found');
@@ -101,7 +113,7 @@ class OrganizationController extends AppBaseController
             return redirect(route('organizations.index'));
         }
 
-        return view('organizations.edit')->with('organization', $organization);
+        return view('organizations.edit', compact('organization', 'type', 'color1', 'color2', 'color3', 'subType'));
     }
 
     /**
@@ -123,6 +135,14 @@ class OrganizationController extends AppBaseController
         }
 
         $organization = $this->organizationRepository->update($request->all(), $id);
+
+      //  $organization->syncTags(['foo' => 'tag1', 'tag2']);
+        $organization->syncTagsWithType([$request->orgType], 'orgType');
+        $organization->syncTagsWithType([$request->color1],'orgColor1');
+        $organization->syncTagsWithType([$request->color2],'orgColor2');
+        $organization->syncTagsWithType([$request->color3],'orgColor3');
+        $organization->syncTagsWithType([$request->orgSubType], 'orgSubType');
+
 
         Flash::success('Organization updated successfully.');
 
