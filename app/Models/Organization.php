@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Eloquent as Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Tags\HasTags;
 
 /**
  * Class Organization
@@ -16,6 +17,7 @@ class Organization extends Model
 {
     use SoftDeletes;
     use \App\Uuids;
+    use HasTags;
 
     /**
      * Indicates if the IDs are auto-incrementing.
